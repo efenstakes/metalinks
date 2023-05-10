@@ -37,7 +37,36 @@ contract MetaLinks is Ownable {
 
 
 
+    // structs
     
+    /// @notice Avatar struct
+    /// @dev Avatar struct
+    struct Avatar {
+        string name;
+        string aka;
+        string bio;
+        string avatar;
+        string bg_avatar;
+        uint256[] links;
+    }
+
+    
+    /// @notice MetaLink struct
+    /// @dev MetaLink struct
+    struct MetaLink {
+        string name;
+        string aka;
+        string universe;
+        string link;
+        string bio;
+        string avatar;
+        string bg_avatar;
+        bool active;
+    }
+
+    
+
+
 
 
 
