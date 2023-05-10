@@ -187,6 +187,110 @@ contract MetaLinks is Ownable {
 
 
 
+    /// @notice Add an avatars address
+    /// @dev Add an avatars address. It skips any addresses that have already been added
+    /// @param _addresses the new avatar _addresses
+    // get address avatar id
+    // for each address, add it to addressesToMID
+    // emit event
+    // return bool
+    function addAvatarAddress(address[] memory _addresses) public isMember returns(bool) {
+        // get address avatar id
+        uint256 avatarID = addressesToMID[msg.sender];
+
+        // ensure id is valid
+        require( avatarID > 0 && avatarID <= totalAvatars, "Not a valid Avatar ID" );
+
+
+        // for each address, add it to addressesToMID
+        for( uint32 counter = 0; counter < _addresses.length; counter++ ) {
+            bool alreadyExists = addressesToMID[_addresses[counter]] > 0;
+
+            // if address is not added, add it
+            if( !alreadyExists ) {
+                addressesToMID[_addresses[counter]] = avatarID;
+                totalAddresses++;
+            }
+        }
+
+        // emit event
+        emit AvatarAddressesAdded( avatarID, _addresses );
+       
+        return true;
+    }
+
+
+
+
+    /// @notice Add an avatars MetaLink
+    /// @dev Add an avatars MetaLink
+    /// @param _name the metalink name 
+    /// @param _aka the metalink aka 
+    /// @param _bio the metalink bio 
+    /// @param _universe the metalink universe 
+    /// @param _avatar the metalink avatar link
+    /// @param _bg_avatar the metalink big image avatar link 
+    /// @param _link the metalink link
+    /// @param _active the determinant for whether metalink is active or not
+    // create link
+    // generate a link id from totalMetaLinks
+    // use the id to save link to midToMetaLinks mapping
+    // add link to users avatar links array
+    // increase total metalinks with 1
+    // emit event
+    // return bool
+    function addAvatarMetalink( string memory _name, string memory _aka, string memory _bio, string memory _universe, string memory _avatar, string memory _bg_avatar, string memory _link, bool _active ) external isMember returns (bool) {
+        // get the avatar id
+        uint256 avatarID = addressesToMID[msg.sender];
+
+        // get the avatar
+        Avatar storage myAvatar = midsToAvatars[avatarID];
+
+        // generate a link id from totalMetaLinks
+        uint256 newMetaLinkID = totalMetaLinks + 1;
+
+        // create link
+        MetaLink memory newLink = MetaLink({
+            name: _name,
+            aka: _aka,
+            bio: _bio,
+            universe: _universe,
+            link: _link,
+            avatar: _avatar,
+            bg_avatar: _bg_avatar,
+            active: _active
+        });
+
+        // use the id to save link to midToMetaLinks mapping
+        midsToMetaLinks[newMetaLinkID] = newLink;
+
+        // add link to users avatar links array
+        myAvatar.links.push(newMetaLinkID);
+
+        // increase total metalinks with 1
+        totalMetaLinks++;
+
+        // emit event
+        // resulted to using newLink.**PROPOERTY_NAME** because of a stack too deep error
+        emit MetaLinkAdded(
+            avatarID,
+            newMetaLinkID,
+            _name,
+            _aka,
+            _bio,
+            _universe,
+            _link,
+            newLink.avatar,
+            newLink.bg_avatar,
+            newLink.active
+        );
+
+        return true;
+    }
+
+
+
+
 
 
 
