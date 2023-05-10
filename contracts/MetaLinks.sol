@@ -289,6 +289,28 @@ contract MetaLinks is Ownable {
     }
 
 
+    /// @notice Check if given address is used
+    /// @dev Check if given address is used
+    /// @param _address the address
+    function isAddressUsed(address _address) public view returns(bool) {
+        return addressesToMID[_address] > 0;
+    }
+
+
+    /// @notice Get my id given address
+    /// @dev Get my id given address
+    function getMyAvatarID() public view returns(uint256) {
+        return addressesToMID[msg.sender];
+    }
+
+
+    /// @notice Get avatar id given address
+    /// @dev Get avatar id given address
+    /// @param _address the avatar address
+    function getAvatarID(address _address) public view returns(uint256) {
+        return addressesToMID[_address];
+    }
+
 
 
 
