@@ -312,6 +312,58 @@ contract MetaLinks is Ownable {
     }
 
 
+    
+    /// @notice Get avatar given address
+    /// @dev Get avatar given address
+    /// @param _address the avatar address
+    function getAvatarByAddress(address _address) public view returns(string memory, string memory, string memory, string memory, string memory, uint[] memory links) {
+        uint256 id = addressesToMID[_address];
+        
+        // ensure the avatar exists
+        require( id > 0 && id <= totalAvatars , "Avatar does not exist" );
+
+        Avatar memory avatar = midsToAvatars[id];
+
+        return ( avatar.name, avatar.aka, avatar.bio, avatar.avatar, avatar.bg_avatar, avatar.links );
+    }
+    
+    
+    /// @notice Get avatar given its id
+    /// @dev Get avatar given its id
+    /// @param _id the avatar id
+    function getAvatarById(uint256 _id) public view returns(string memory, string memory, string memory, string memory, string memory, uint[] memory links) {      
+        // ensure the avatar exists
+        require( _id > 0 && _id <= totalAvatars , "Avatar does not exist" );
+
+        Avatar memory avatar = midsToAvatars[_id];
+
+        return ( avatar.name, avatar.aka, avatar.bio, avatar.avatar, avatar.bg_avatar, avatar.links );
+    }
+
+
+    /// @notice Get avatar metalink id list
+    /// @dev Get avatar metalink id list
+    /// @param _id the avatar id
+    function getAvatarMetaLinkIDs(uint256 _id) public view returns(uint256[] memory links) {        
+        Avatar memory avatar = midsToAvatars[_id];
+
+        return avatar.links;
+    }
+
+
+    /// @notice Get metalink data
+    /// @dev Get metalink data
+    /// @param _id the metalink id
+    function getMetaLink(uint256 _id) public view returns(string memory, string memory, string memory, string memory, string memory, string memory) {
+        // ensure the metalink exists
+        require( _id > 0 && _id <= totalMetaLinks , "MetaLink does not exist" );
+
+        MetaLink memory metaLink = midsToMetaLinks[_id];
+
+        return ( metaLink.name, metaLink.aka, metaLink.bio, metaLink.avatar, metaLink.bg_avatar, metaLink.link );
+    }
+    
+
 
 
 
