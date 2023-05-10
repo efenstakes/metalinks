@@ -65,6 +65,65 @@ contract MetaLinks is Ownable {
     }
 
     
+    
+
+    // events
+
+    /// @notice Event emitted when avatar is created
+    /// @dev Event emitted when avatar is created
+    /// @param avatarID the avatar id 
+    /// @param name the avatar name 
+    /// @param aka the avatar aka 
+    /// @param bio the avatar bio 
+    /// @param avatar the avatar avatar link
+    /// @param bgAvatar the big image avatar link 
+    event AvatarCreated(
+        uint256 indexed avatarID,
+        string name,
+        string aka,
+        string bio,
+        string avatar,
+        string bgAvatar
+    );
+
+    /// @notice Event emitted when avatar adds an address to their avatar
+    /// @dev Event emitted when avatar adds an address to their avatar
+    /// @param avatarID the avatar id 
+    /// @param newAddresses the added addresses
+    event AvatarAddressesAdded(
+        uint256 indexed avatarID,
+        address[] newAddresses
+    );
+
+
+    /// @notice Event emitted when an avatar adds a MetaLink
+    /// @dev Event emitted when an avatar adds a MetaLink
+    /// @param avatarID the avatar id 
+    /// @param newMetaLinkID the MetaLink id 
+    /// @param name the MetaLink name 
+    /// @param aka the MetaLink aka 
+    /// @param bio the MetaLink bio 
+    /// @param avatar the MetaLink avatar link
+    /// @param bgAvatar the big image MetaLink link 
+    event MetaLinkAdded(
+        uint256 indexed avatarID,
+        uint256 indexed newMetaLinkID,
+        string name,
+        string aka,
+        string bio,
+        string universe,
+        string link,
+        string avatar,
+        string bgAvatar,
+        bool active
+    );
+
+
+
+    // constructor
+    constructor() { }
+
+
 
 
 
