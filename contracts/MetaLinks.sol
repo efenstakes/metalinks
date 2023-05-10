@@ -124,6 +124,68 @@ contract MetaLinks is Ownable {
     constructor() { }
 
 
+    // modifiers
+
+    /// @notice Ensure address has an avatar
+    /// @dev Ensure address has an avatar
+    modifier isMember() {
+        require( addressesToMID[msg.sender] > 0 && addressesToMID[msg.sender] <= totalAvatars, "You have to be a member" );
+        _;
+    }
+
+    /// @notice Ensure address has no avatar
+    /// @dev Ensure address has no avatar
+    modifier isNotMember() {
+        require( addressesToMID[msg.sender] == 0, "You are already a member" );
+        _;
+    }
+
+
+
+    /// @notice Create an avatar
+    /// @dev Create an avatar
+    /// @param _name the avatar name 
+    /// @param _aka the avatar aka 
+    /// @param _bio the avatar bio 
+    /// @param _avatar the avatar avatar link
+    /// @param _bg_avatar the big image avatar link 
+    // generate new avatar id
+    // associate address with generated avatar id
+    // create avatar
+    // add avatar to midsToAvatars
+    // increase number of avatars by 1
+    // emit event
+    // return bool
+    function createAvatar( string memory _name, string memory _aka, string memory _bio, string memory _avatar, string memory _bg_avatar ) external isNotMember returns (uint256) {
+        // generate new avatar id
+        uint256 id = totalAvatars + 1;
+
+        // associate address with generated avatar id
+        addressesToMID[msg.sender] = id;
+
+        // create avatar
+        Avatar memory newAvatar = Avatar({
+            name: _name,
+            aka: _aka,
+            bio: _bio,
+            avatar: _avatar,
+            bg_avatar: _bg_avatar,
+            links: new uint256[](0)
+        });
+        
+        // add avatar to midsToAvatars
+        midsToAvatars[id] = newAvatar;
+
+        // increase number of avatars by 1
+        totalAvatars++;
+
+        // emit event
+        emit AvatarCreated( id, _name, _aka, _bio, _avatar, _bg_avatar );
+
+        return id;
+    }
+
+
 
 
 
