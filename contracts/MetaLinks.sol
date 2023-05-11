@@ -27,13 +27,13 @@ contract MetaLinks is Ownable {
     uint256 public totalAddresses;
 
     // map a metalink id to their addresses
-    mapping( address => uint256 ) public addressesToMID;
+    mapping( address => uint256 ) public addressToAvatarID;
 
     // map an id to avatar data
-    mapping( uint256 => Avatar ) public midsToAvatars;
+    mapping( uint256 => Avatar ) public idToAvatar;
     
-    // map an metalink id to links
-    mapping( uint256 => MetaLink ) public midsToMetaLinks;
+    // map a metalink id to links
+    mapping( uint256 => MetaLink ) public idToLink;
 
 
 
@@ -129,14 +129,14 @@ contract MetaLinks is Ownable {
     /// @notice Ensure address has an avatar
     /// @dev Ensure address has an avatar
     modifier isMember() {
-        require( addressesToMID[msg.sender] > 0 && addressesToMID[msg.sender] <= totalAvatars, "You have to be a member" );
+        require( addressToAvatarID[msg.sender] > 0 && addressToAvatarID[msg.sender] <= totalAvatars, "You have to be a member" );
         _;
     }
 
     /// @notice Ensure address has no avatar
     /// @dev Ensure address has no avatar
     modifier isNotMember() {
-        require( addressesToMID[msg.sender] == 0, "You are already a member" );
+        require( addressToAvatarID[msg.sender] == 0, "You are already a member" );
         _;
     }
 
@@ -152,7 +152,7 @@ contract MetaLinks is Ownable {
     // generate new avatar id
     // associate address with generated avatar id
     // create avatar
-    // add avatar to midsToAvatars
+    // add avatar to idToAvatar
     // increase number of avatars by 1
     // emit event
     // return bool
@@ -161,7 +161,7 @@ contract MetaLinks is Ownable {
         uint256 id = totalAvatars + 1;
 
         // associate address with generated avatar id
-        addressesToMID[msg.sender] = id;
+        addressToAvatarID[msg.sender] = id;
 
         // create avatar
         Avatar memory newAvatar = Avatar({
@@ -173,8 +173,8 @@ contract MetaLinks is Ownable {
             links: new uint256[](0)
         });
         
-        // add avatar to midsToAvatars
-        midsToAvatars[id] = newAvatar;
+        // add avatar to idToAvatar
+        idToAvatar[id] = newAvatar;
 
         // increase number of avatars by 1
         totalAvatars++;
@@ -191,24 +191,24 @@ contract MetaLinks is Ownable {
     /// @dev Add an avatars address. It skips any addresses that have already been added
     /// @param _addresses the new avatar _addresses
     // get address avatar id
-    // for each address, add it to addressesToMID
+    // for each address, add it to addressToAvatarID
     // emit event
     // return bool
     function addAvatarAddress(address[] memory _addresses) public isMember returns(bool) {
         // get address avatar id
-        uint256 avatarID = addressesToMID[msg.sender];
+        uint256 avatarID = addressToAvatarID[msg.sender];
 
         // ensure id is valid
         require( avatarID > 0 && avatarID <= totalAvatars, "Not a valid Avatar ID" );
 
 
-        // for each address, add it to addressesToMID
+        // for each address, add it to addressToAvatarID
         for( uint32 counter = 0; counter < _addresses.length; counter++ ) {
-            bool alreadyExists = addressesToMID[_addresses[counter]] > 0;
+            bool alreadyExists = addressToAvatarID[_addresses[counter]] > 0;
 
             // if address is not added, add it
             if( !alreadyExists ) {
-                addressesToMID[_addresses[counter]] = avatarID;
+                addressToAvatarID[_addresses[counter]] = avatarID;
                 totalAddresses++;
             }
         }
@@ -241,13 +241,13 @@ contract MetaLinks is Ownable {
     // return bool
     function addAvatarMetalink( string memory _name, string memory _aka, string memory _bio, string memory _universe, string memory _avatar, string memory _bg_avatar, string memory _link, bool _active ) external isMember returns (bool) {
         // get the avatar id
-        uint256 avatarID = addressesToMID[msg.sender];
+        uint256 avatarID = addressToAvatarID[msg.sender];
 
         // get the avatar
-        Avatar storage myAvatar = midsToAvatars[avatarID];
+        Avatar storage myAvatar = idToAvatar[avatarID];
 
         // generate a link id from totalMetaLinks
-        uint256 newMetaLinkID = totalMetaLinks + 1;
+        uint256 newLinkID = totalMetaLinks + 1;
 
         // create link
         MetaLink memory newLink = MetaLink({
@@ -262,10 +262,10 @@ contract MetaLinks is Ownable {
         });
 
         // use the id to save link to midToMetaLinks mapping
-        midsToMetaLinks[newMetaLinkID] = newLink;
+        idToLink[newLinkID] = newLink;
 
-        // add link to users avatar links array
-        myAvatar.links.push(newMetaLinkID);
+        // add link to avatar's links array
+        myAvatar.links.push(newLinkID);
 
         // increase total metalinks with 1
         totalMetaLinks++;
@@ -274,7 +274,7 @@ contract MetaLinks is Ownable {
         // resulted to using newLink.**PROPOERTY_NAME** because of a stack too deep error
         emit MetaLinkAdded(
             avatarID,
-            newMetaLinkID,
+            newLinkID,
             _name,
             _aka,
             _bio,
@@ -293,14 +293,14 @@ contract MetaLinks is Ownable {
     /// @dev Check if given address is used
     /// @param _address the address
     function isAddressUsed(address _address) public view returns(bool) {
-        return addressesToMID[_address] > 0;
+        return addressToAvatarID[_address] > 0;
     }
 
 
     /// @notice Get my id given address
     /// @dev Get my id given address
     function getMyAvatarID() public view returns(uint256) {
-        return addressesToMID[msg.sender];
+        return addressToAvatarID[msg.sender];
     }
 
 
@@ -308,7 +308,7 @@ contract MetaLinks is Ownable {
     /// @dev Get avatar id given address
     /// @param _address the avatar address
     function getAvatarID(address _address) public view returns(uint256) {
-        return addressesToMID[_address];
+        return addressToAvatarID[_address];
     }
 
 
@@ -317,12 +317,12 @@ contract MetaLinks is Ownable {
     /// @dev Get avatar given address
     /// @param _address the avatar address
     function getAvatarByAddress(address _address) public view returns(string memory, string memory, string memory, string memory, string memory, uint[] memory links) {
-        uint256 id = addressesToMID[_address];
+        uint256 id = addressToAvatarID[_address];
         
         // ensure the avatar exists
         require( id > 0 && id <= totalAvatars , "Avatar does not exist" );
 
-        Avatar memory avatar = midsToAvatars[id];
+        Avatar memory avatar = idToAvatar[id];
 
         return ( avatar.name, avatar.aka, avatar.bio, avatar.avatar, avatar.bg_avatar, avatar.links );
     }
@@ -335,7 +335,7 @@ contract MetaLinks is Ownable {
         // ensure the avatar exists
         require( _id > 0 && _id <= totalAvatars , "Avatar does not exist" );
 
-        Avatar memory avatar = midsToAvatars[_id];
+        Avatar memory avatar = idToAvatar[_id];
 
         return ( avatar.name, avatar.aka, avatar.bio, avatar.avatar, avatar.bg_avatar, avatar.links );
     }
@@ -345,7 +345,7 @@ contract MetaLinks is Ownable {
     /// @dev Get avatar metalink id list
     /// @param _id the avatar id
     function getAvatarMetaLinkIDs(uint256 _id) public view returns(uint256[] memory links) {        
-        Avatar memory avatar = midsToAvatars[_id];
+        Avatar memory avatar = idToAvatar[_id];
 
         return avatar.links;
     }
@@ -358,7 +358,7 @@ contract MetaLinks is Ownable {
         // ensure the metalink exists
         require( _id > 0 && _id <= totalMetaLinks , "MetaLink does not exist" );
 
-        MetaLink memory metaLink = midsToMetaLinks[_id];
+        MetaLink memory metaLink = idToLink[_id];
 
         return ( metaLink.name, metaLink.aka, metaLink.bio, metaLink.avatar, metaLink.bg_avatar, metaLink.link );
     }
