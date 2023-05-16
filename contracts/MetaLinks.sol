@@ -26,7 +26,7 @@ contract MetaLinks is Ownable {
     // total addresses that have been added
     uint256 public totalAddresses;
 
-    // map a metalink id to their addresses
+    // map an address to their avatar id
     mapping( address => uint256 ) public addressToAvatarID;
 
     // map an id to avatar data
@@ -178,6 +178,9 @@ contract MetaLinks is Ownable {
 
         // increase number of avatars by 1
         totalAvatars++;
+
+        // increase number of addresses added so far
+        totalAddresses++;
 
         // emit event
         emit AvatarCreated( id, _name, _aka, _bio, _avatar, _bg_avatar );
