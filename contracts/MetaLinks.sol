@@ -10,7 +10,7 @@ import "hardhat/console.sol";
 
 
 /// @title MetaLinks
-/// @author efenstakes
+/// @author efenstakes / felix
 /// @notice Manages MetaLinks avatars & their links
 /// @dev this contract has logic to store and retrieve metalink avatars and their links
 contract MetaLinks is Ownable {
@@ -353,19 +353,35 @@ contract MetaLinks is Ownable {
         return avatar.links;
     }
 
-
     /// @notice Get metalink data
     /// @dev Get metalink data
     /// @param _id the metalink id
-    function getMetaLink(uint256 _id) public view returns(string memory, string memory, string memory, string memory, string memory, string memory) {
+    function getMetaLink(uint256 _id) public view returns(string memory, string memory, string memory, string memory, string memory, string memory, string memory, bool) {
         // ensure the metalink exists
         require( _id > 0 && _id <= totalMetaLinks , "MetaLink does not exist" );
 
         MetaLink memory metaLink = idToLink[_id];
 
-        return ( metaLink.name, metaLink.aka, metaLink.bio, metaLink.avatar, metaLink.bg_avatar, metaLink.link );
+        return ( metaLink.name, metaLink.aka, metaLink.universe, metaLink.bio, metaLink.avatar, metaLink.bg_avatar, metaLink.link, metaLink.active );
     }
     
+    /// @notice Get avatar metalinks data
+    /// @dev Get avatar metalinks data
+    /// @param _id the avatar id
+    function getMetaLinks(uint256 _id) public view returns(MetaLink[] memory) {
+        // ensure the avatar exists
+        require( _id > 0 && _id <= totalAvatars , "Avatar does not exist" );
+
+        uint[] memory metaLinkIds = idToAvatar[_id].links;
+        MetaLink[] memory metaLinks;
+
+        for (uint256 index = 0; index < metaLinkIds.length; index++) {
+            MetaLink memory metaLink = idToLink[ metaLinkIds[index] ];
+            metaLinks[ index ] = metaLink;
+        }
+
+        return metaLinks;
+    }
 
 
 
